@@ -19,3 +19,7 @@ yarn-error.log
 /.vscode
 .idea
 /app-back
+
+**/caddy
+frankenphp
+frankenphp-worker.php

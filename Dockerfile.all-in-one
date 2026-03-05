@@ -10,36 +10,52 @@ COPY ./frontend .
 
 RUN yarn install && yarn build
 
-FROM serversideup/php:beta-8.3.2-fpm-alpine
+FROM dunglas/frankenphp:php8.3-alpine
 
 ENV PHP_OPCACHE_ENABLE=1
 
-RUN install-php-extensions intl
+# install packages
+RUN apk add --no-cache \
+    bash \
+    curl \
+    git \
+    supervisor \
+    nodejs \
+    yarn \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-RUN apk add --no-cache nodejs yarn nginx supervisor
+RUN install-php-extensions \
+    intl \
+    pdo_pgsql \
+    pcntl \
+    redis \
+    zip \
+    gd \
+    bcmath
 
 COPY --from=node-frontend /app/frontend /app/frontend
 
 COPY ./backend /app/backend
-RUN chown -R www-data:www-data /app/backend \
-    && find /app/backend -type d -exec chmod 755 {} \; \
-    && find /app/backend -type f -exec chmod 644 {} \; \
-    && chmod -R 777 /app/backend/storage /app/backend/bootstrap/cache \
-    && composer install --working-dir=/app/backend \
+
+WORKDIR /app/backend
+
+RUN chmod -R 777 storage bootstrap/cache \
+    && composer install \
         --ignore-platform-reqs \
         --no-interaction \
         --no-dev \
         --optimize-autoloader \
         --prefer-dist \
-    && chmod -R 777 /app/backend/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer
+    && chmod -R 777 /app/backend/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
+    && php artisan octane:install --server=frankenphp
 
-COPY ./docker/all-in-one/nginx/nginx.conf /etc/nginx/nginx.conf
+COPY ./docker/all-in-one/Caddyfile /etc/Caddyfile
 COPY ./docker/all-in-one/supervisor/supervisord.conf /etc/supervisord.conf
 
 COPY ./docker/all-in-one/scripts/startup.sh /startup.sh
 RUN dos2unix /startup.sh && chmod +x /startup.sh
 
-EXPOSE 80
+EXPOSE 80 443 443/udp
 
 WORKDIR /app
 

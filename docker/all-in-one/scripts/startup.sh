@@ -15,7 +15,7 @@ php artisan route:clear
 php artisan view:clear
 php artisan storage:link
 
-chown -R www-data:www-data /app/backend
+chown -R root:root /app/backend
 chmod -R 775 /app/backend/storage /app/backend/bootstrap/cache
 
 exec /usr/bin/supervisord -c /etc/supervisord.conf

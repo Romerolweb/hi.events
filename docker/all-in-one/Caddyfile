@@ -1,0 +1,26 @@
+{
+	frankenphp {
+		worker /app/backend/public/frankenphp-worker.php
+	}
+	order php_server before file_server
+}
+
+:80 {
+	root * /app/backend/public
+	encode zstd br gzip
+
+	handle /api/* {
+		rewrite * /index.php?{query}
+		php_server
+	}
+
+	handle /storage/* {
+		uri strip_prefix /storage
+		root * /app/backend/storage/app/public
+		file_server
+	}
+
+	handle {
+		reverse_proxy localhost:5678
+	}
+}

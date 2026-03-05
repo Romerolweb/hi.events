@@ -1,24 +1,27 @@
-FROM serversideup/php:8.3-fpm-nginx-alpine
+FROM dunglas/frankenphp:php8.3-alpine
 
 ENV PHP_OPCACHE_ENABLE=1
+ENV FRANKENPHP_CONFIG="worker ./public/frankenphp-worker.php"
 
-USER root
+# install packages
+RUN apk add --no-cache \
+    bash \
+    curl \
+    git \
+    supervisor \
+    && curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Set `www-data` as the user to start FPM
-RUN echo "" >> /usr/local/etc/php-fpm.d/docker-php-serversideup-pool.conf && \
-    echo "user = www-data" >> /usr/local/etc/php-fpm.d/docker-php-serversideup-pool.conf && \
-    echo "group = www-data" >> /usr/local/etc/php-fpm.d/docker-php-serversideup-pool.conf
+RUN install-php-extensions \
+    intl \
+    pdo_pgsql \
+    pcntl \
+    redis \
+    zip \
+    gd \
+    bcmath
 
-RUN install-php-extensions intl
-
-COPY --chown=www-data:www-data . .
-
-RUN chmod -R 755 storage  \
-    && mkdir -p bootstrap/cache \
-    && chmod -R 775 bootstrap/cache \
-    && mkdir -p /var/lib/nginx/tmp \
-    && chown -R www-data:www-data /var/lib/nginx \
-    && chmod -R 755 /var/lib/nginx
+COPY . /app
+WORKDIR /app
 
 RUN composer install \
     --ignore-platform-reqs \
@@ -27,8 +30,13 @@ RUN composer install \
     --optimize-autoloader \
     --prefer-dist
 
-RUN mkdir -p /var/www/html/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
-    && chmod -R 775 /var/www/html/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
-    && chown -R www-data:www-data /var/www/html/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer
+RUN chmod -R 755 storage \
+    && mkdir -p bootstrap/cache \
+    && chmod -R 775 bootstrap/cache \
+    && mkdir -p /app/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
+    && chmod -R 775 /app/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
+    && php artisan octane:install --server=frankenphp
 
-EXPOSE 8080
+EXPOSE 80 443 443/udp
+
+CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=80"]
