@@ -1,24 +1,32 @@
-FROM serversideup/php:8.4-fpm-nginx-alpine
+FROM dunglas/frankenphp:php8.3-alpine
 
-ENV PHP_OPCACHE_ENABLE=1
+ENV SERVER_NAME=":80"
 
-USER root
+# Install dependencies and extensions
+RUN install-php-extensions \
+    gd \
+    pdo_pgsql \
+    sodium \
+    curl \
+    intl \
+    mbstring \
+    xml \
+    zip \
+    bcmath \
+    pcntl \
+    imagick \
+    opcache
 
-# Set `www-data` as the user to start FPM
-RUN echo "" >> /usr/local/etc/php-fpm.d/docker-php-serversideup-pool.conf && \
-    echo "user = www-data" >> /usr/local/etc/php-fpm.d/docker-php-serversideup-pool.conf && \
-    echo "group = www-data" >> /usr/local/etc/php-fpm.d/docker-php-serversideup-pool.conf
+WORKDIR /app
 
-RUN install-php-extensions intl imagick
+COPY . /app
 
-COPY --chown=www-data:www-data . .
-
-RUN chmod -R 755 storage  \
+RUN chmod -R 755 storage \
     && mkdir -p bootstrap/cache \
     && chmod -R 775 bootstrap/cache \
-    && mkdir -p /var/lib/nginx/tmp \
-    && chown -R www-data:www-data /var/lib/nginx \
-    && chmod -R 755 /var/lib/nginx
+    && chown -R root:root storage bootstrap/cache
+
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 RUN composer install \
     --ignore-platform-reqs \
@@ -27,8 +35,10 @@ RUN composer install \
     --optimize-autoloader \
     --prefer-dist
 
-RUN mkdir -p /var/www/html/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
-    && chmod -R 775 /var/www/html/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
-    && chown -R www-data:www-data /var/www/html/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer
+RUN mkdir -p /app/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
+    && chmod -R 775 /app/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
+    && chown -R root:root /app/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer
 
-EXPOSE 8080
+EXPOSE 8000
+
+CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=auto"]

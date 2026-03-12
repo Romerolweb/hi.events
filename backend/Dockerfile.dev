@@ -1,19 +1,31 @@
-FROM serversideup/php:8.4-fpm-nginx-alpine
+FROM dunglas/frankenphp:php8.3-alpine
 
-ENV PHP_OPCACHE_ENABLE=1
-ENV NGINX_WEBROOT=/var/www/html/public
+ENV SERVER_NAME=":80"
 
-WORKDIR /var/www/html
+# Install required PHP extensions
+RUN install-php-extensions \
+    gd \
+    pdo_pgsql \
+    sodium \
+    curl \
+    intl \
+    mbstring \
+    xml \
+    zip \
+    bcmath \
+    pcntl \
+    imagick \
+    opcache
 
-RUN mkdir -p /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chown -R www-data:www-data /var/www/html
+WORKDIR /app
 
-COPY --chown=www-data:www-data . /var/www/html
+# Ensure correct permissions for storage and cache directories
+RUN mkdir -p /app/storage /app/bootstrap/cache \
+    && chmod -R 775 /app/storage /app/bootstrap/cache \
+    && chown -R root:root /app/storage /app/bootstrap/cache
 
-# Switch to root user to install PHP extensions
-USER root
-RUN install-php-extensions intl imagick
-USER www-data
+COPY . /app
 
-RUN chmod -R 755 /var/www/html/storage \
-    && chmod -R 775 /var/www/html/bootstrap/cache
+EXPOSE 8000
+
+CMD ["php", "artisan", "octane:frankenphp", "--host=0.0.0.0", "--port=8000", "--workers=auto", "--watch"]
