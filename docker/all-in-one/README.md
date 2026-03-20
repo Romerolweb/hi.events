@@ -1,11 +1,6 @@
-# Hi.Events All-in-One Docker Image
+# Hi.Events All-in-One Docker Compose Setup
 
-The all-in-one Docker image runs both the frontend and backend services in a single container. While it can be used in 
-production, the recommended approach for production is to run the frontend and backend separately for better scalability and security.
-
-The provided docker-compose.yml file is meant for development and testing purposes. For production, you should use
-the [Docker image](https://hub.docker.com/r/daveearley/hi.events-all-in-one), or create your own Docker compose file with the 
-necessary [configurations for production](https://hi.events/docs/getting-started/deploying#configuring-environment-variables).
+This directory provides a production-ready orchestrated Docker Compose setup. It runs the backend (using FrankenPHP), frontend (Node.js SSR), queue workers, and databases using discrete, highly-scalable containers.
 
 ## Quick Start with Docker
 
@@ -28,40 +23,25 @@ Generate the keys using the following commands:
 
 #### Unix/Linux/MacOS/WSL
 ```bash
-echo base64:$(openssl rand -base64 32)  # For APP_KEY
-openssl rand -base64 32                 # For JWT_SECRET
+echo "APP_KEY=base64:$(openssl rand -base64 32)" >> .env
+echo "JWT_SECRET=$(openssl rand -base64 32)" >> .env
 ```
 
 #### Windows (Command Prompt):
 ```cmd
-for /f "tokens=*" %i in ('openssl rand -base64 32') do @echo APP_KEY=base64:%i
-for /f "tokens=*" %i in ('openssl rand -base64 32') do @echo JWT_SECRET=%i
+for /f "tokens=*" %i in ('openssl rand -base64 32') do @echo APP_KEY=base64:%i >> .env
+for /f "tokens=*" %i in ('openssl rand -base64 32') do @echo JWT_SECRET=%i >> .env
 ```
 
-#### Windows (PowerShell):
-```powershell
-"base64:$([Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32)))"  # For APP_KEY
-[Convert]::ToBase64String([System.Security.Cryptography.RandomNumberGenerator]::GetBytes(32))  # For JWT_SECRET
-```
-
-### Step 4: Update the `.env` File
-
-Update the `.env` file located in `./docker/all-in-one/.env` with the generated `APP_KEY` and `JWT_SECRET`:
-
-```plaintext
-APP_KEY=your_generated_app_key
-JWT_SECRET=your_generated_jwt_secret
-```
-
-### Step 5: Start the Docker Containers
+### Step 4: Start the Docker Containers
 
 ```bash
 docker compose up -d
 ```
 
-### Step 6: Create an Account
+### Step 5: Create an Account
 
-Visit [http://localhost:8123/auth/register](http://localhost:8123/auth/register) to create an account.
+Visit [http://localhost:5678/auth/register](http://localhost:5678/auth/register) to view the frontend and create an account.
 
 ---
 
