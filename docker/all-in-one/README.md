@@ -1,8 +1,22 @@
-# Hi.Events All-in-One Docker Compose Setup
+# Hi.Events "All-in-One" Docker Deployments
 
-This directory provides a production-ready orchestrated Docker Compose setup. It runs the backend (using FrankenPHP), frontend (Node.js SSR), queue workers, and databases using discrete, highly-scalable containers.
+This directory provides two options for deployment depending on your infrastructure:
 
-## Quick Start with Docker
+### 1. Orchestrated Docker Compose (Recommended)
+This uses discrete, highly-scalable containers orchestrated by `docker-compose.yml`. This is the recommended approach for self-hosting on a VPS or AWS.
+
+See the Quick Start instructions below to use this method.
+
+### 2. Single-Container PaaS deployments (Render.com, Heroku, etc.)
+Platform-as-a-Service (PaaS) providers often charge per running container. To deploy Hi.Events efficiently on these platforms, we provide a monolithic `Dockerfile.all-in-one` in the root repository.
+
+This Dockerfile uses a multi-stage build to compile the frontend, and uses **FrankenPHP (Caddy)** to natively serve both the static Single-Page Application and the dynamic Laravel backend from a single port (`8000`), while running a background queue worker via a lightweight Supervisor process.
+
+If deploying to Render.com, simply point your Web Service to the `Dockerfile.all-in-one` file.
+
+---
+
+## Quick Start with Docker Compose (Orchestrated)
 
 ### Step 1: Clone the Repository
 
@@ -42,8 +56,3 @@ docker compose up -d
 ### Step 5: Create an Account
 
 Visit [http://localhost:5678/auth/register](http://localhost:5678/auth/register) to view the frontend and create an account.
-
----
-
-**Production Note:**  
-For production, ensure you generate unique `APP_KEY` and `JWT_SECRET` for each environment and never hardcode sensitive values.

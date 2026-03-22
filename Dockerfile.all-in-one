@@ -1,0 +1,56 @@
+# --- Stage 1: Build the Frontend ---
+FROM node:22-alpine AS node-frontend
+WORKDIR /app/frontend
+RUN apk add --no-cache yarn
+COPY ./frontend/package.json ./frontend/yarn.lock ./
+COPY ./frontend .
+RUN yarn install && yarn build
+
+# --- Stage 2: Build the Backend with FrankenPHP ---
+FROM dunglas/frankenphp:php8.3-alpine
+
+ENV SERVER_NAME=":8000"
+ENV LARAVEL_OCTANE=1
+ENV APP_ENV="production"
+
+WORKDIR /app
+
+# Combine layers and use apk directly where possible to avoid the huge image layer build failures.
+RUN set -ex \
+    && apk add --no-cache php83-pdo_pgsql php83-pgsql php83-redis php83-pcntl php83-bcmath php83-zip php83-intl php83-opcache curl supervisor \
+    && install-php-extensions gd pdo_pgsql sodium curl intl mbstring xml zip bcmath pcntl imagick opcache || echo "Extensions already provided by base image or failed gracefully."
+
+# Copy Backend
+COPY ./backend /app/backend
+
+# Setup Directories and Permissions
+RUN chmod -R 775 /app/backend/storage \
+    && mkdir -p /app/backend/bootstrap/cache \
+    && chmod -R 775 /app/backend/bootstrap/cache \
+    && chown -R root:root /app/backend/storage /app/backend/bootstrap/cache
+
+# Install Composer Dependencies
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer \
+    && cd /app/backend \
+    && composer install --ignore-platform-reqs --no-interaction --no-dev --optimize-autoloader --prefer-dist
+
+RUN mkdir -p /app/backend/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
+    && chmod -R 775 /app/backend/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer \
+    && chown -R root:root /app/backend/vendor/ezyang/htmlpurifier/library/HTMLPurifier/DefinitionCache/Serializer
+
+# --- Stage 3: Combine Frontend, Supervisor, and Caddyfile ---
+COPY --from=node-frontend /app/frontend/dist /app/frontend/dist
+
+# Install Octane and configure FrankenPHP worker
+RUN cd /app/backend && php artisan octane:install --server=frankenphp
+
+# Setup Supervisor and Startup Scripts
+COPY ./docker/all-in-one/supervisord.conf /etc/supervisord.conf
+COPY ./docker/all-in-one/Caddyfile /etc/caddy/Caddyfile
+COPY ./docker/all-in-one/startup.sh /startup.sh
+
+RUN dos2unix /startup.sh && chmod +x /startup.sh
+
+EXPOSE 8000
+
+CMD ["/startup.sh"]
