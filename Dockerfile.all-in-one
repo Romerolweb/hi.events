@@ -23,7 +23,7 @@ WORKDIR /app
 # Install PHP extensions
 RUN set -ex \
     && apk add --no-cache php83-pdo_pgsql php83-pgsql php83-redis php83-pcntl php83-bcmath php83-zip php83-intl php83-opcache curl supervisor \
-    && install-php-extensions gd pdo_pgsql sodium curl intl mbstring xml zip bcmath pcntl imagick opcache
+    && install-php-extensions gd redis pdo_pgsql sodium curl intl mbstring xml zip bcmath pcntl imagick opcache
 
 # Copy Backend
 COPY ./backend /app/backend

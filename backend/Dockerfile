@@ -9,7 +9,7 @@ COPY . /app
 # Combine layers and use apk directly where possible, suppressing output and avoiding the huge image layer build failures.
 RUN set -ex \
     && apk add --no-cache php83-pdo_pgsql php83-pgsql php83-redis php83-pcntl php83-bcmath php83-zip php83-intl php83-opcache curl supervisor \
-    && install-php-extensions gd pdo_pgsql sodium curl intl mbstring xml zip bcmath pcntl imagick opcache \
+    && install-php-extensions gd redis pdo_pgsql sodium curl intl mbstring xml zip bcmath pcntl imagick opcache \
     && chmod -R 775 storage \
     && mkdir -p bootstrap/cache \
     && chmod -R 775 bootstrap/cache \

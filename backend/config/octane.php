@@ -137,6 +137,8 @@ return [
     'flush' => [
         \HiEvents\Services\Infrastructure\Stripe\StripeConfigurationService::class,
         \HiEvents\Services\Infrastructure\Stripe\StripeClientFactory::class,
+        'tymon.jwt.auth',
+        'tymon.jwt.provider.auth',
         //
     ],
 
