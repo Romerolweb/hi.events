@@ -1,0 +1,60 @@
+# fly.toml — Hi.Events All-in-One (FrankenPHP + Frontend + Queue Worker)
+# See https://fly.io/docs/reference/configuration/
+
+app = "hi-events"
+primary_region = "iad"
+
+[build]
+  dockerfile = "Dockerfile.all-in-one"
+
+  [build.args]
+    VITE_FRONTEND_URL = "https://hi-events.fly.dev"
+    VITE_API_URL_CLIENT = "https://hi-events.fly.dev/api"
+    VITE_API_URL_SERVER = "http://localhost:8000/api"
+    VITE_STRIPE_PUBLISHABLE_KEY = ""
+    VITE_APP_NAME = "Hi.Events"
+
+[env]
+  APP_ENV = "production"
+  APP_DEBUG = "false"
+  LOG_CHANNEL = "stderr"
+  QUEUE_CONNECTION = "redis"
+  OCTANE_SERVER = "frankenphp"
+  APP_FRONTEND_URL = "https://hi-events.fly.dev"
+  APP_CDN_URL = "https://hi-events.fly.dev/storage"
+  APP_DISABLE_REGISTRATION = "false"
+  APP_SAAS_MODE_ENABLED = "false"
+  APP_SAAS_STRIPE_APPLICATION_FEE_PERCENT = "0"
+  APP_SAAS_STRIPE_APPLICATION_FEE_FIXED = "0"
+  MAIL_MAILER = "log"
+  MAIL_FROM_ADDRESS = "noreply@hi-events.fly.dev"
+  MAIL_FROM_NAME = "Hi Events"
+  FILESYSTEM_PUBLIC_DISK = "public"
+  FILESYSTEM_PRIVATE_DISK = "local"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 0
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+[[vm]]
+  memory = "512mb"
+  cpu_kind = "shared"
+  cpus = 1
+
+[checks]
+  [checks.health]
+    port = 8000
+    type = "http"
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "30s"
+    method = "GET"
+    path = "/"

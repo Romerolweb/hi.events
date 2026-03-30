@@ -6,6 +6,19 @@ RUN apk add --no-cache yarn
 # Increase network timeout for slow ARM emulation builds
 RUN yarn config set network-timeout 600000
 
+# Build-time args for Vite (baked into the JS bundle)
+ARG VITE_FRONTEND_URL="http://localhost:5678"
+ARG VITE_API_URL_CLIENT="http://localhost:8080/api"
+ARG VITE_API_URL_SERVER="http://localhost:8000/api"
+ARG VITE_STRIPE_PUBLISHABLE_KEY=""
+ARG VITE_APP_NAME="Hi.Events"
+
+ENV VITE_FRONTEND_URL=$VITE_FRONTEND_URL
+ENV VITE_API_URL_CLIENT=$VITE_API_URL_CLIENT
+ENV VITE_API_URL_SERVER=$VITE_API_URL_SERVER
+ENV VITE_STRIPE_PUBLISHABLE_KEY=$VITE_STRIPE_PUBLISHABLE_KEY
+ENV VITE_APP_NAME=$VITE_APP_NAME
+
 COPY ./frontend/package.json ./frontend/yarn.lock ./
 COPY ./frontend .
 COPY ./VERSION /app/VERSION
