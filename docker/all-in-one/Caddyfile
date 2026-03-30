@@ -36,7 +36,7 @@
         not path /api/* /storage/* /oauth/* /sanctum/* /broadcasting/*
     }
     route @frontend {
-        root * /app/frontend/dist
+        root * /app/frontend/dist/client
         try_files {path} /index.html
         file_server
     }
