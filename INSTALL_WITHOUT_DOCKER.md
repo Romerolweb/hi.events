@@ -25,7 +25,7 @@ First, fork the repository and clone it locally:
 git clone https://github.com/youraccount/Hi.Events.git
 ```
 
-Hi.Events has two main directories: `backend` (Laravel) and `frontend` (React/Vue).
+Hi.Events has two main directories: `backend` (Laravel) and `frontend` (React).
 
 ### Backend Setup
 

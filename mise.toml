@@ -1,0 +1,33 @@
+[tools]
+# Core runtimes
+yarn = "latest"
+
+
+[env]
+# Environment variables shared across your terminal sessions.
+APP_ENV = "local"
+DATABASE_URL = "postgres://hi-events:hi-events@localhost:5432/hi-events"
+
+[tasks.setup]
+description = "Full project initialization using Docker (No local runtimes required)"
+run = "make setup"
+
+[tasks.up]
+description = "Launch the development stack (FrankenPHP & React)"
+run = "make up"
+
+[tasks.down]
+description = "Stop and remove all project containers"
+run = "make down"
+
+[tasks.test]
+description = "Execute backend tests within the PHP container"
+run = "make test"
+
+[tasks.logs]
+description = "Tail logs from the running services"
+run = "make logs"
+
+[tasks.reload]
+description = "Reload the Octane worker inside FrankenPHP"
+run = "make octane-reload"

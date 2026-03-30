@@ -58,9 +58,12 @@ use HiEvents\Http\Actions\Events\Images\DeleteEventImageAction;
 use HiEvents\Http\Actions\Events\Images\GetEventImagesAction;
 use HiEvents\Http\Actions\Events\Stats\GetEventStatsAction;
 use HiEvents\Http\Actions\Events\UpdateEventAction;
+use HiEvents\Http\Actions\Events\DeleteEventAction;
+use HiEvents\Http\Actions\Events\GetEventDeletionStatusAction;
 use HiEvents\Http\Actions\Events\UpdateEventStatusAction;
 use HiEvents\Http\Actions\EventSettings\EditEventSettingsAction;
 use HiEvents\Http\Actions\EventSettings\GetEventSettingsAction;
+use HiEvents\Http\Actions\EventSettings\GetPlatformFeePreviewAction;
 use HiEvents\Http\Actions\EmailTemplates\CreateOrganizerEmailTemplateAction;
 use HiEvents\Http\Actions\EmailTemplates\CreateEventEmailTemplateAction;
 use HiEvents\Http\Actions\EmailTemplates\UpdateOrganizerEmailTemplateAction;
@@ -76,6 +79,8 @@ use HiEvents\Http\Actions\EmailTemplates\GetDefaultEmailTemplateAction;
 use HiEvents\Http\Actions\EventSettings\PartialEditEventSettingsAction;
 use HiEvents\Http\Actions\Images\CreateImageAction;
 use HiEvents\Http\Actions\Images\DeleteImageAction;
+use HiEvents\Http\Actions\Messages\CancelMessageAction;
+use HiEvents\Http\Actions\Messages\GetMessageRecipientsAction;
 use HiEvents\Http\Actions\Messages\GetMessagesAction;
 use HiEvents\Http\Actions\Messages\SendMessageAction;
 use HiEvents\Http\Actions\Orders\CancelOrderAction;
@@ -111,7 +116,15 @@ use HiEvents\Http\Actions\Organizers\Public\SendOrganizerContactMessagePublicAct
 use HiEvents\Http\Actions\Organizers\Settings\GetOrganizerSettingsAction;
 use HiEvents\Http\Actions\Organizers\Settings\PartialUpdateOrganizerSettingsAction;
 use HiEvents\Http\Actions\Organizers\Stats\GetOrganizerStatsAction;
+use HiEvents\Http\Actions\Organizers\DeleteOrganizerAction;
+use HiEvents\Http\Actions\Organizers\GetOrganizerDeletionStatusAction;
 use HiEvents\Http\Actions\Organizers\UpdateOrganizerStatusAction;
+use HiEvents\Http\Actions\Organizers\Webhooks\CreateOrganizerWebhookAction;
+use HiEvents\Http\Actions\Organizers\Webhooks\DeleteOrganizerWebhookAction;
+use HiEvents\Http\Actions\Organizers\Webhooks\EditOrganizerWebhookAction;
+use HiEvents\Http\Actions\Organizers\Webhooks\GetOrganizerWebhookAction;
+use HiEvents\Http\Actions\Organizers\Webhooks\GetOrganizerWebhookLogsAction;
+use HiEvents\Http\Actions\Organizers\Webhooks\GetOrganizerWebhooksAction;
 use HiEvents\Http\Actions\ProductCategories\CreateProductCategoryAction;
 use HiEvents\Http\Actions\ProductCategories\DeleteProductCategoryAction;
 use HiEvents\Http\Actions\ProductCategories\EditProductCategoryAction;
@@ -182,6 +195,7 @@ use HiEvents\Http\Actions\Admin\GetMessagingTiersAction;
 use HiEvents\Http\Actions\Admin\Accounts\UpdateAccountMessagingTierAction;
 use HiEvents\Http\Actions\Admin\Orders\GetAllOrdersAction;
 use HiEvents\Http\Actions\Admin\Attribution\GetUtmAttributionStatsAction;
+use HiEvents\Http\Actions\Admin\GetSystemInfoAction;
 use HiEvents\Http\Actions\Admin\Stats\GetAdminDashboardDataAction;
 use HiEvents\Http\Actions\Admin\Stats\GetAdminStatsAction;
 use HiEvents\Http\Actions\Admin\Users\GetAllUsersAction;
@@ -189,6 +203,12 @@ use HiEvents\Http\Actions\Admin\Users\StartImpersonationAction;
 use HiEvents\Http\Actions\Admin\Users\StopImpersonationAction;
 use HiEvents\Http\Actions\TicketLookup\GetOrdersByLookupTokenAction;
 use HiEvents\Http\Actions\TicketLookup\SendTicketLookupEmailAction;
+use HiEvents\Http\Actions\Waitlist\Organizer\CancelWaitlistEntryAction;
+use HiEvents\Http\Actions\Waitlist\Organizer\GetWaitlistEntriesAction;
+use HiEvents\Http\Actions\Waitlist\Organizer\GetWaitlistStatsAction;
+use HiEvents\Http\Actions\Waitlist\Organizer\OfferWaitlistEntryAction;
+use HiEvents\Http\Actions\Waitlist\Public\CancelWaitlistEntryActionPublic;
+use HiEvents\Http\Actions\Waitlist\Public\CreateWaitlistEntryActionPublic;
 use HiEvents\Http\Actions\Webhooks\CreateWebhookAction;
 use HiEvents\Http\Actions\Webhooks\DeleteWebhookAction;
 use HiEvents\Http\Actions\Webhooks\EditWebhookAction;
@@ -257,6 +277,8 @@ $router->middleware(['auth:api'])->group(
         // This is POST instead of PUT because you can't upload files via PUT in PHP (at least not easily)
         $router->post('/organizers/{organizer_id}', EditOrganizerAction::class);
         $router->put('/organizers/{organizer_id}/status', UpdateOrganizerStatusAction::class);
+        $router->delete('/organizers/{organizer_id}', DeleteOrganizerAction::class);
+        $router->get('/organizers/{organizer_id}/deletion-status', GetOrganizerDeletionStatusAction::class);
         $router->get('/organizers', GetOrganizersAction::class);
         $router->get('/organizers/{organizer_id}', GetOrganizerAction::class);
         $router->get('/organizers/{organizer_id}/events', GetOrganizerEventsAction::class);
@@ -266,6 +288,12 @@ $router->middleware(['auth:api'])->group(
         $router->patch('/organizers/{organizer_id}/settings', PartialUpdateOrganizerSettingsAction::class);
         $router->get('/organizers/{organizer_id}/reports/{report_type}', GetOrganizerReportAction::class);
         $router->get('/organizers/{organizer_id}/reports/{report_type}/export', ExportOrganizerReportAction::class);
+        $router->post('/organizers/{organizer_id}/webhooks', CreateOrganizerWebhookAction::class);
+        $router->get('/organizers/{organizer_id}/webhooks', GetOrganizerWebhooksAction::class);
+        $router->put('/organizers/{organizer_id}/webhooks/{webhook_id}', EditOrganizerWebhookAction::class);
+        $router->get('/organizers/{organizer_id}/webhooks/{webhook_id}', GetOrganizerWebhookAction::class);
+        $router->delete('/organizers/{organizer_id}/webhooks/{webhook_id}', DeleteOrganizerWebhookAction::class);
+        $router->get('/organizers/{organizer_id}/webhooks/{webhook_id}/logs', GetOrganizerWebhookLogsAction::class);
 
         // Email Templates - Organizer level
         $router->get('/organizers/{organizerId}/email-templates', GetOrganizerEmailTemplatesAction::class);
@@ -288,6 +316,8 @@ $router->middleware(['auth:api'])->group(
         $router->get('/events/{event_id}', GetEventAction::class);
         $router->put('/events/{event_id}', UpdateEventAction::class);
         $router->put('/events/{event_id}/status', UpdateEventStatusAction::class);
+        $router->delete('/events/{event_id}', DeleteEventAction::class);
+        $router->get('/events/{event_id}/deletion-status', GetEventDeletionStatusAction::class);
         $router->post('/events/{event_id}/duplicate', DuplicateEventAction::class);
 
         // Product Categories
@@ -371,11 +401,14 @@ $router->middleware(['auth:api'])->group(
         // Messages
         $router->post('/events/{event_id}/messages', SendMessageAction::class);
         $router->get('/events/{event_id}/messages', GetMessagesAction::class);
+        $router->post('/events/{event_id}/messages/{message_id}/cancel', CancelMessageAction::class);
+        $router->get('/events/{event_id}/messages/{message_id}/recipients', GetMessageRecipientsAction::class);
 
         // Event Settings
         $router->get('/events/{event_id}/settings', GetEventSettingsAction::class);
         $router->put('/events/{event_id}/settings', EditEventSettingsAction::class);
         $router->patch('/events/{event_id}/settings', PartialEditEventSettingsAction::class);
+        $router->get('/events/{event_id}/settings/platform-fee-preview', GetPlatformFeePreviewAction::class);
 
         // Capacity Assignments
         $router->post('/events/{event_id}/capacity-assignments', CreateCapacityAssignmentAction::class);
@@ -401,6 +434,12 @@ $router->middleware(['auth:api'])->group(
 
         // Reports
         $router->get('/events/{event_id}/reports/{report_type}', GetReportAction::class);
+
+        // Waitlist
+        $router->get('/events/{event_id}/waitlist', GetWaitlistEntriesAction::class);
+        $router->get('/events/{event_id}/waitlist/stats', GetWaitlistStatsAction::class);
+        $router->post('/events/{event_id}/waitlist/offer-next', OfferWaitlistEntryAction::class);
+        $router->delete('/events/{event_id}/waitlist/{entry_id}', CancelWaitlistEntryAction::class);
 
         // Images
         $router->post('/images', CreateImageAction::class);
@@ -442,6 +481,9 @@ $router->prefix('/admin')->middleware(['auth:api'])->group(
         // Messaging Tiers
         $router->get('/messaging-tiers', GetMessagingTiersAction::class);
         $router->put('/accounts/{account_id}/messaging-tier', UpdateAccountMessagingTierAction::class);
+
+        // System Info
+        $router->get('/system-info', GetSystemInfoAction::class);
     }
 );
 
@@ -471,6 +513,12 @@ $router->prefix('/public')->group(
 
         // Attendees
         $router->get('/events/{event_id}/attendees/{attendee_short_id}', GetAttendeeActionPublic::class);
+
+        // Waitlist
+        $router->post('/events/{event_id}/waitlist', CreateWaitlistEntryActionPublic::class)
+            ->middleware('throttle:10,1');
+        $router->delete('/events/{event_id}/waitlist/{token}', CancelWaitlistEntryActionPublic::class)
+            ->middleware('throttle:10,1');
 
         // Promo codes
         $router->get('/events/{event_id}/promo-codes/{promo_code}', GetPromoCodePublic::class);

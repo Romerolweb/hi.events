@@ -10,19 +10,23 @@ import {MiscSettings} from "./Sections/MiscSettings";
 import {Box, Group, NavLink as MantineNavLink, Stack} from "@mantine/core";
 import {
     IconAdjustments,
+    IconAlertTriangle,
     IconAt,
     IconBrandGoogleAnalytics,
     IconBuildingStore,
     IconCreditCard,
     IconHome,
+    IconListCheck,
     IconMapPin,
     IconPercentage,
 } from "@tabler/icons-react";
 import {useMediaQuery} from "@mantine/hooks";
-import {useMemo, useState} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Card} from "../../../common/Card";
 import {PaymentAndInvoicingSettings} from "./Sections/PaymentSettings";
 import {PlatformFeesSettings} from "./Sections/PlatformFeesSettings";
+import {WaitlistSettings} from "./Sections/WaitlistSettings";
+import {DangerZoneSettings} from "./Sections/DangerZoneSettings";
 import {useGetAccount} from "../../../../queries/useGetAccount.ts";
 
 export const Settings = () => {
@@ -68,10 +72,23 @@ export const Settings = () => {
                 component: MiscSettings
             },
             {
+                id: 'waitlist-settings',
+                label: t`Waitlist`,
+                icon: IconListCheck,
+                component: WaitlistSettings,
+            },
+            {
                 id: 'payment-settings',
                 label: t`Payment & Invoicing`,
                 icon: IconCreditCard,
                 component: PaymentAndInvoicingSettings,
+            },
+            {
+                id: 'danger-zone',
+                label: t`Danger Zone`,
+                icon: IconAlertTriangle,
+                component: DangerZoneSettings,
+                color: 'red',
             }
         ];
 
@@ -88,10 +105,26 @@ export const Settings = () => {
     }, [isSaasMode]);
 
     const isLargeScreen = useMediaQuery('(min-width: 1200px)', true);
-    const [activeSection, setActiveSection] = useState('event-details');
+    const [activeSection, setActiveSection] = useState(() => {
+        if (typeof window === 'undefined') return 'event-details';
+        const hash = window.location.hash.replace('#', '');
+        return hash || 'event-details';
+    });
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return;
+        const hash = window.location.hash.replace('#', '');
+        if (hash) {
+            setActiveSection(hash);
+            setTimeout(() => {
+                document.getElementById(hash)?.scrollIntoView({behavior: 'smooth'});
+            }, 100);
+        }
+    }, []);
 
     const handleClick = (sectionId: string) => {
         setActiveSection(sectionId);
+        window.history.replaceState(null, '', `#${sectionId}`);
         document.getElementById(sectionId)?.scrollIntoView({behavior: 'smooth'});
     };
 
@@ -104,6 +137,7 @@ export const Settings = () => {
                         key={section.id}
                         active={activeSection === section.id}
                         label={section.label}
+                        color={'color' in section ? section.color as string : undefined}
                         leftSection={<section.icon size={16} stroke={1.5}/>}
                         onClick={() => handleClick(section.id)}
                     />
