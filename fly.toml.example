@@ -1,15 +1,23 @@
 # fly.toml — Hi.Events All-in-One (FrankenPHP + Frontend + Queue Worker)
 # See https://fly.io/docs/reference/configuration/
+#
+# Quick start:
+#   1. Copy this file to fly.toml
+#   2. Replace YOUR_APP_NAME with your Fly.io app name
+#   3. Set secrets:  fly secrets set APP_KEY="..." JWT_SECRET="..." STRIPE_SECRET_KEY="..." STRIPE_PUBLIC_KEY="..." STRIPE_WEBHOOK_SECRET="..."
+#   4. Create Postgres:  fly postgres create --name YOUR_APP_NAME-db --region iad
+#   5. Attach it:  fly postgres attach YOUR_APP_NAME-db
+#   6. Deploy:  fly deploy --remote-only
 
-app = "hi-events-romerolweb"
+app = "YOUR_APP_NAME"
 primary_region = "iad"
 
 [build]
   dockerfile = "Dockerfile.all-in-one"
 
   [build.args]
-    VITE_FRONTEND_URL = "https://hi-events-romerolweb.fly.dev"
-    VITE_API_URL_CLIENT = "https://hi-events-romerolweb.fly.dev/api"
+    VITE_FRONTEND_URL = "https://YOUR_APP_NAME.fly.dev"
+    VITE_API_URL_CLIENT = "https://YOUR_APP_NAME.fly.dev/api"
     VITE_API_URL_SERVER = "http://localhost:8000/api"
     VITE_STRIPE_PUBLISHABLE_KEY = ""
     VITE_APP_NAME = "Hi.Events"
@@ -21,14 +29,14 @@ primary_region = "iad"
   QUEUE_CONNECTION = "sync"
   CACHE_STORE = "file"
   OCTANE_SERVER = "frankenphp"
-  APP_FRONTEND_URL = "https://hi-events-romerolweb.fly.dev"
-  APP_CDN_URL = "https://hi-events-romerolweb.fly.dev/storage"
+  APP_FRONTEND_URL = "https://YOUR_APP_NAME.fly.dev"
+  APP_CDN_URL = "https://YOUR_APP_NAME.fly.dev/storage"
   APP_DISABLE_REGISTRATION = "false"
   APP_SAAS_MODE_ENABLED = "false"
   APP_SAAS_STRIPE_APPLICATION_FEE_PERCENT = "0"
   APP_SAAS_STRIPE_APPLICATION_FEE_FIXED = "0"
   MAIL_MAILER = "log"
-  MAIL_FROM_ADDRESS = "noreply@hi-events-romerolweb.fly.dev"
+  MAIL_FROM_ADDRESS = "noreply@YOUR_APP_NAME.fly.dev"
   MAIL_FROM_NAME = "Hi Events"
   FILESYSTEM_PUBLIC_DISK = "public"
   FILESYSTEM_PRIVATE_DISK = "local"

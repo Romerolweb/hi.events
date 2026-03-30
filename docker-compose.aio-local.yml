@@ -1,5 +1,7 @@
 # Local test for the All-in-One Dockerfile
-# Usage: docker compose -f docker-compose.aio-local.yml up --build
+#
+# 1. Copy .env.aio-local.example to .env.aio-local and fill in your secrets
+# 2. Run:  docker compose -f docker-compose.aio-local.yml --env-file .env.aio-local up --build
 services:
   app:
     build:
@@ -9,16 +11,16 @@ services:
         VITE_FRONTEND_URL: "http://localhost:8000"
         VITE_API_URL_CLIENT: "http://localhost:8000/api"
         VITE_API_URL_SERVER: "http://localhost:8000/api"
-        VITE_STRIPE_PUBLISHABLE_KEY: ""
+        VITE_STRIPE_PUBLISHABLE_KEY: "${VITE_STRIPE_PUBLISHABLE_KEY:-}"
         VITE_APP_NAME: "Hi.Events"
     ports:
       - "8000:8000"
     environment:
       APP_ENV: production
       APP_DEBUG: "false"
-      APP_KEY: "base64:DT+6GEO7JPGZnSI2zJZJHZ3XPtv6YfYTMbaglwDWQQw="
-      JWT_SECRET: "YgtRjG55Rzr414N7ZLrU1AddsdOF/isDS6g8/FhA3cg="
-      DATABASE_URL: "postgresql://postgres:secret@postgres:5432/hi-events"
+      APP_KEY: "${APP_KEY:?Set APP_KEY in .env.aio-local}"
+      JWT_SECRET: "${JWT_SECRET:?Set JWT_SECRET in .env.aio-local}"
+      DATABASE_URL: "postgresql://postgres:${POSTGRES_PASSWORD:-secret}@postgres:5432/hi-events"
       REDIS_HOST: redis
       REDIS_PORT: 6379
       REDIS_PASSWORD: ""
@@ -35,9 +37,9 @@ services:
       MAIL_FROM_NAME: "Hi Events"
       FILESYSTEM_PUBLIC_DISK: public
       FILESYSTEM_PRIVATE_DISK: local
-      STRIPE_PUBLIC_KEY: "pk_test_placeholder"
-      STRIPE_SECRET_KEY: "sk_test_placeholder"
-      STRIPE_WEBHOOK_SECRET: "whsec_test_placeholder"
+      STRIPE_PUBLIC_KEY: "${STRIPE_PUBLIC_KEY:-}"
+      STRIPE_SECRET_KEY: "${STRIPE_SECRET_KEY:-}"
+      STRIPE_WEBHOOK_SECRET: "${STRIPE_WEBHOOK_SECRET:-}"
     depends_on:
       postgres:
         condition: service_healthy
@@ -49,7 +51,7 @@ services:
     environment:
       POSTGRES_DB: hi-events
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: secret
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:-secret}"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres -d hi-events"]
       interval: 5s

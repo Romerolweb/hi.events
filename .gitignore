@@ -6,6 +6,9 @@
 frontend/.env
 backend/.env
 docker/all-in-one/.env
+docker/development/.env
+.env.aio-local
+fly.toml
 todo.md
 CLAUDE.md
 /prompts/**
