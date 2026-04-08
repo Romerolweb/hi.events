@@ -1,13 +1,52 @@
-# fly.toml — Hi.Events All-in-One (FrankenPHP + Frontend + Queue Worker)
+# fly.toml.example — Hi.Events All-in-One (FrankenPHP + Frontend + Queue Worker)
 # See https://fly.io/docs/reference/configuration/
 #
 # Quick start:
-#   1. Copy this file to fly.toml
-#   2. Replace YOUR_APP_NAME with your Fly.io app name
-#   3. Set secrets:  fly secrets set APP_KEY="..." JWT_SECRET="..." STRIPE_SECRET_KEY="..." STRIPE_PUBLIC_KEY="..." STRIPE_WEBHOOK_SECRET="..."
-#   4. Create Postgres:  fly postgres create --name YOUR_APP_NAME-db --region iad
-#   5. Attach it:  fly postgres attach YOUR_APP_NAME-db
-#   6. Deploy:  fly deploy --remote-only
+#   1. cp fly.toml.example fly.toml
+#   2. Replace YOUR_APP_NAME everywhere below
+#   3. Set secrets (see below) — NEVER put secrets in this file
+#   4. Deploy: fly deploy --remote-only
+#
+# ── Required Secrets ──────────────────────────────────────────────
+#
+#   fly secrets set \
+#     APP_KEY="base64:$(openssl rand -base64 32)" \
+#     JWT_SECRET="$(openssl rand -base64 32)" \
+#     DATABASE_URL="postgresql://user:pass@host:6543/postgres" \
+#     MAIL_PASSWORD="your-smtp-password" \
+#     --app YOUR_APP_NAME
+#
+# ── File Storage (S3-compatible: Supabase Storage, R2, AWS S3) ───
+#
+#   fly secrets set \
+#     AWS_ACCESS_KEY_ID="..." \
+#     AWS_SECRET_ACCESS_KEY="..." \
+#     AWS_ENDPOINT="https://your-s3-endpoint" \
+#     APP_CDN_URL="https://public-url-for-assets" \
+#     --app YOUR_APP_NAME
+#
+# ── Stripe (when ready for payments) ─────────────────────────────
+#
+#   fly secrets set \
+#     STRIPE_SECRET_KEY="sk_..." \
+#     STRIPE_PUBLIC_KEY="pk_..." \
+#     STRIPE_WEBHOOK_SECRET="whsec_..." \
+#     --app YOUR_APP_NAME
+#
+# ── Database Options ──────────────────────────────────────────────
+#
+# Option A — Supabase (free tier available):
+#   1. Create project at https://supabase.com
+#   2. Enable pg_trgm extension: Dashboard > Database > Extensions
+#   3. Create storage buckets for uploads (one public, one private)
+#   4. Use Transaction Pooler URL (port 6543) for DATABASE_URL:
+#      postgresql://postgres.<ref>:<pass>@aws-0-<region>.pooler.supabase.com:6543/postgres
+#
+# Option B — Fly Postgres:
+#   fly postgres create --name YOUR_APP_NAME-db --region iad
+#   fly postgres attach YOUR_APP_NAME-db --app YOUR_APP_NAME
+#   (auto-sets DATABASE_URL)
+#
 
 app = "YOUR_APP_NAME"
 primary_region = "iad"
@@ -27,19 +66,29 @@ primary_region = "iad"
   APP_DEBUG = "false"
   LOG_CHANNEL = "stderr"
   QUEUE_CONNECTION = "sync"
-  CACHE_STORE = "file"
-  OCTANE_SERVER = "frankenphp"
+  CACHE_DRIVER = "file"
+  APP_URL = "https://YOUR_APP_NAME.fly.dev"
   APP_FRONTEND_URL = "https://YOUR_APP_NAME.fly.dev"
-  APP_CDN_URL = "https://YOUR_APP_NAME.fly.dev/storage"
+  DB_CONNECTION = "pgsql"
   APP_DISABLE_REGISTRATION = "false"
   APP_SAAS_MODE_ENABLED = "false"
   APP_SAAS_STRIPE_APPLICATION_FEE_PERCENT = "0"
   APP_SAAS_STRIPE_APPLICATION_FEE_FIXED = "0"
-  MAIL_MAILER = "log"
+  MAIL_MAILER = "smtp"
+  MAIL_HOST = "smtp.example.com"
+  MAIL_PORT = "587"
+  MAIL_USERNAME = "your-smtp-username"
+  MAIL_ENCRYPTION = "tls"
   MAIL_FROM_ADDRESS = "noreply@YOUR_APP_NAME.fly.dev"
   MAIL_FROM_NAME = "Hi Events"
-  FILESYSTEM_PUBLIC_DISK = "public"
-  FILESYSTEM_PRIVATE_DISK = "local"
+  # MAIL_PASSWORD → fly secrets
+  FILESYSTEM_PUBLIC_DISK = "s3-public"
+  FILESYSTEM_PRIVATE_DISK = "s3-private"
+  AWS_DEFAULT_REGION = "us-east-1"
+  AWS_PUBLIC_BUCKET = "your-public-bucket"
+  AWS_PRIVATE_BUCKET = "your-private-bucket"
+  AWS_USE_PATH_STYLE_ENDPOINT = "true"
+  # AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_ENDPOINT, APP_CDN_URL → fly secrets
 
 [http_service]
   internal_port = 8000
