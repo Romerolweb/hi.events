@@ -57,4 +57,9 @@ docker compose up -d
 
 ### Step 5: Create an Account
 
-Visit [http://localhost:5678/auth/register](http://localhost:5678/auth/register) to view the frontend and create an account.
+Visit [http://localhost:8000/auth/register](http://localhost:8000/auth/register) to create an account.
+
+---
+
+**Production Note:**  
+For production, ensure you generate unique `APP_KEY` and `JWT_SECRET` for each environment and never hardcode sensitive values.

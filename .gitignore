@@ -9,8 +9,8 @@ docker/all-in-one/.env
 docker/development/.env
 .env.aio-local
 fly.toml
+docker-compose.override.yml
 todo.md
-CLAUDE.md
 /prompts/**
 /prompts
 
