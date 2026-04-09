@@ -7,7 +7,7 @@ setup steps, and configuration details.
 
 ## Prerequisites
 
-1. [Install PHP 8.2 or higher](https://www.php.net/downloads.php)
+1. [Install PHP 8.3 or higher](https://www.php.net/downloads.php)
 2. [Install Composer](https://getcomposer.org/download/)
 3. [Install PostgreSQL](https://www.postgresql.org/download/)
 4. [Install Node.js](https://nodejs.org/en)
@@ -76,8 +76,7 @@ Hi.Events has two main directories: `backend` (Laravel) and `frontend` (React).
    Set the application and frontend URLs in the `.env` file:
 
    ```bash
-   APP_URL=http://localhost
-   APP_PORT=8000
+   APP_URL=http://localhost:8000
    APP_FRONTEND_URL=http://localhost:5678
    ```
 
@@ -89,12 +88,13 @@ Hi.Events has two main directories: `backend` (Laravel) and `frontend` (React).
    composer install
    ```
 
-6. **Generate Application Key:**
+6. **Generate Application Key & JWT Secret:**
 
-   Generate the Laravel application key:
+   Generate the required Laravel and JWT keys:
 
    ```bash
    php artisan key:generate
+   php artisan jwt:secret
    ```
 
 7. **Run Migrations:**
@@ -121,17 +121,34 @@ Hi.Events has two main directories: `backend` (Laravel) and `frontend` (React).
    php artisan storage:link
    ```
 
-9. **Start the Backend Server:**
+9. **Start the Backend Server (with FrankenPHP):**
 
-   Start the Laravel development server:
+   Hi.Events uses **FrankenPHP** (via Laravel Octane) as the application server for massive performance improvements. You do not need Nginx or PHP-FPM.
+
+   First, install the FrankenPHP binary:
 
    ```bash
-   php artisan serve
+   php artisan octane:install --server=frankenphp
+   ```
+
+   Then, start the Laravel Octane server:
+
+   ```bash
+   php artisan octane:start --server=frankenphp --port=8000
    ```
 
    Visit `http://localhost:8000` to verify the backend is running.
 
-10. **Optional: Configure Stripe (for Payment Integration):**
+10. **Start the Queue Worker:**
+
+In a separate terminal window, start the Laravel Queue worker to handle background tasks:
+
+```bash
+cd backend
+php artisan queue:work
+```
+
+1. **Optional: Configure Stripe (for Payment Integration):**
 
 If you want to test the payment functionality, configure Stripe:
 
@@ -147,29 +164,29 @@ STRIPE_WEBHOOK_SECRET=your_webhook_secret
 
 Navigate to the `frontend` directory and copy the example `.env` file:
 
-   ```bash
-   cd frontend
-   cp .env.example .env
-   ```
+```bash
+cd frontend
+cp .env.example .env
+```
 
 #### 2. **Configure Frontend `.env`:**
 
 Update the `.env` file with the following settings:
 
-   ```bash
-   VITE_API_URL_CLIENT=http://localhost:8000
-   VITE_API_URL_SERVER=http://localhost:8000
-   VITE_FRONTEND_URL=http://localhost:5678
-   VITE_STRIPE_PUBLISHABLE_KEY=pk_test_XXXXXXXX
-   ```
+```bash
+VITE_API_URL_CLIENT=http://localhost:8000
+VITE_API_URL_SERVER=http://localhost:8000
+VITE_FRONTEND_URL=http://localhost:5678
+VITE_STRIPE_PUBLISHABLE_KEY=pk_test_XXXXXXXX
+```
 
 #### 3. **Install Dependencies:**
 
 Install the frontend dependencies:
 
-   ```bash
-   yarn install
-   ```
+```bash
+yarn install
+```
 
 #### 4. **Set Environment Variables:**
 
@@ -197,10 +214,10 @@ Set the environment variables before starting the frontend app.
 
 Run the following commands to build and start the frontend application:
 
-   ```bash
-   yarn build
-   yarn start
-   ```
+```bash
+yarn build
+yarn start
+```
 
 Visit `http://localhost:5678` to view the frontend.
 

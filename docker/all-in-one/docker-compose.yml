@@ -1,19 +1,21 @@
 services:
-  all-in-one:
+  web:
     build:
-      context: ./../../
-      dockerfile: Dockerfile.all-in-one
+      context: ./../../backend
+      dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "8123:80"
+      - "8080:8000"
     environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
       - VITE_FRONTEND_URL=${VITE_FRONTEND_URL}
       - VITE_API_URL_CLIENT=${VITE_API_URL_CLIENT}
       - VITE_API_URL_SERVER=${VITE_API_URL_SERVER}
       - VITE_STRIPE_PUBLISHABLE_KEY=${VITE_STRIPE_PUBLISHABLE_KEY}
       - VITE_APP_NAME=${VITE_APP_NAME}
       - LOG_CHANNEL=${LOG_CHANNEL}
-      - QUEUE_CONNECTION=${QUEUE_CONNECTION}
+      - QUEUE_CONNECTION=${QUEUE_CONNECTION:-redis}
       - APP_KEY=${APP_KEY}
       - APP_CDN_URL=${APP_CDN_URL}
       - APP_FRONTEND_URL=${APP_FRONTEND_URL}
@@ -43,12 +45,64 @@ services:
       - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
       - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
       - WEBHOOK_QUEUE_NAME=webhook-queue
-
+      - OCTANE_SERVER=frankenphp
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_healthy
+
+  queue:
+    build:
+      context: ./../../backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: php artisan queue:work --queue=default,webhook-queue --sleep=3 --tries=3 --timeout=60
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-secret}@postgres:5432/${POSTGRES_DB:-hi-events}
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=
+      - REDIS_PORT=6379
+      - QUEUE_CONNECTION=${QUEUE_CONNECTION:-redis}
+      - LOG_CHANNEL=${LOG_CHANNEL}
+      - APP_KEY=${APP_KEY}
+      - JWT_SECRET=${JWT_SECRET}
+      - MAIL_MAILER=${MAIL_MAILER}
+      - MAIL_DRIVER=${MAIL_DRIVER}
+      - MAIL_HOST=${MAIL_HOST}
+      - MAIL_PORT=${MAIL_PORT}
+      - MAIL_USERNAME=${MAIL_USERNAME}
+      - MAIL_PASSWORD=${MAIL_PASSWORD}
+      - MAIL_ENCRYPTION=${MAIL_ENCRYPTION}
+      - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS}
+      - MAIL_FROM_NAME=${MAIL_FROM_NAME}
+      - STRIPE_PUBLIC_KEY=${STRIPE_PUBLIC_KEY}
+      - STRIPE_SECRET_KEY=${STRIPE_SECRET_KEY}
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET}
+      - WEBHOOK_QUEUE_NAME=webhook-queue
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./../../frontend
+      dockerfile: Dockerfile.ssr
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL_CLIENT=${VITE_API_URL_CLIENT:-http://localhost}
+      - VITE_API_URL_SERVER=http://web:8000
+      - VITE_FRONTEND_URL=${VITE_FRONTEND_URL:-http://localhost:5678}
+      - VITE_STRIPE_PUBLISHABLE_KEY=${VITE_STRIPE_PUBLISHABLE_KEY}
+    depends_on:
+      - web
 
   redis:
     image: redis:7-alpine

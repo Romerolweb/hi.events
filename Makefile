@@ -70,3 +70,4 @@ shell-frontend: ## Open a shell inside the frontend container
 test: ## Run backend unit and feature tests
 	@echo "🧪 Running tests..."
 	docker compose -f $(DOCKER_DEV_COMPOSE) exec backend php artisan test
+	
