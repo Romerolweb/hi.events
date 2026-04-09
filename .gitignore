@@ -23,3 +23,5 @@ prompts/
 
 /plans/**
 /plans
+.claude/**
+.vscode/mcp.json
