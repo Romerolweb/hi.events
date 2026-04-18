@@ -920,12 +920,12 @@ msgid "Are you sure you want to leave?"
 msgstr "您确定要离开吗？"
 
 #: src/components/layouts/Event/index.tsx:154
-#: src/components/routes/event/EventDashboard/index.tsx:73
+#: src/components/routes/event/EventDashboard/index.tsx:78
 msgid "Are you sure you want to make this event draft? This will make the event invisible to the public"
 msgstr "您确定要将此活动设为草稿吗？这将使公众无法看到该活动"
 
 #: src/components/layouts/Event/index.tsx:155
-#: src/components/routes/event/EventDashboard/index.tsx:74
+#: src/components/routes/event/EventDashboard/index.tsx:79
 msgid "Are you sure you want to make this event public? This will make the event visible to the public"
 msgstr "您确定要将此事件公开吗？这将使事件对公众可见"
 
@@ -1134,7 +1134,7 @@ msgstr "与会者已导出"
 msgid "Attendees registered"
 msgstr "已注册参会者"
 
-#: src/components/routes/event/EventDashboard/index.tsx:275
+#: src/components/routes/event/EventDashboard/index.tsx:330
 msgid "Attendees Registered"
 msgstr "注册的参会者"
 
@@ -1794,7 +1794,7 @@ msgid "Complete Payment"
 msgstr "完成付款"
 
 #: src/components/common/StripeConnectButton/index.tsx:87
-#: src/components/routes/event/EventDashboard/index.tsx:241
+#: src/components/routes/event/EventDashboard/index.tsx:246
 msgid "Complete Stripe Setup"
 msgstr "完成 Stripe 设置"
 
@@ -1802,7 +1802,7 @@ msgstr "完成 Stripe 设置"
 msgid "Complete the setup below to continue"
 msgstr "完成下面的设置以继续"
 
-#: src/components/routes/event/EventDashboard/index.tsx:163
+#: src/components/routes/event/EventDashboard/index.tsx:168
 msgid "Complete these steps to start selling tickets for your event."
 msgstr "完成以下步骤即可开始销售您的活动门票。"
 
@@ -1831,7 +1831,7 @@ msgstr "已完成"
 msgid "Completed orders"
 msgstr "已完成订单"
 
-#: src/components/routes/event/EventDashboard/index.tsx:273
+#: src/components/routes/event/EventDashboard/index.tsx:328
 msgid "Completed Orders"
 msgstr "已完成订单"
 
@@ -1956,7 +1956,7 @@ msgstr "连接并升级"
 msgid "Connect Documentation"
 msgstr "连接文档"
 
-#: src/components/routes/event/EventDashboard/index.tsx:228
+#: src/components/routes/event/EventDashboard/index.tsx:233
 msgid "Connect payment processing"
 msgstr "连接支付处理"
 
@@ -1973,7 +1973,7 @@ msgstr "连接Stripe以启用电子邮件模板编辑"
 msgid "Connect Stripe to enable messaging"
 msgstr "连接 Stripe 以启用消息功能"
 
-#: src/components/routes/event/EventDashboard/index.tsx:241
+#: src/components/routes/event/EventDashboard/index.tsx:246
 msgid "Connect to Stripe"
 msgstr "连接到 Stripe"
 
@@ -3320,6 +3320,7 @@ msgstr "欧元"
 #: src/components/routes/admin/Dashboard/index.tsx:305
 #: src/components/routes/admin/Messages/index.tsx:163
 #: src/components/routes/admin/Messages/index.tsx:277
+#: src/components/routes/event/EventDashboard/index.tsx:296
 #: src/components/routes/events/Dashboard/index.tsx:184
 #: src/components/routes/organizer/Reports/CheckInSummaryReport/index.tsx:19
 #: src/components/routes/organizer/Reports/EventsPerformanceReport/index.tsx:41
@@ -3453,7 +3454,7 @@ msgstr "活动设置"
 #: src/components/common/EventCard/index.tsx:70
 #: src/components/common/StatusToggle/index.tsx:63
 #: src/components/layouts/Event/index.tsx:170
-#: src/components/routes/event/EventDashboard/index.tsx:88
+#: src/components/routes/event/EventDashboard/index.tsx:93
 #: src/components/routes/event/GettingStarted/index.tsx:68
 msgid "Event status update failed. Please try again later"
 msgstr "活动状态更新失败。请稍后再试"
@@ -3461,7 +3462,7 @@ msgstr "活动状态更新失败。请稍后再试"
 #: src/components/common/EventCard/index.tsx:67
 #: src/components/common/StatusToggle/index.tsx:55
 #: src/components/layouts/Event/index.tsx:166
-#: src/components/routes/event/EventDashboard/index.tsx:85
+#: src/components/routes/event/EventDashboard/index.tsx:90
 #: src/components/routes/event/GettingStarted/index.tsx:65
 msgid "Event status updated"
 msgstr "事件状态已更新"
@@ -3921,6 +3922,18 @@ msgstr "完成设置"
 msgid "Finish Stripe Setup"
 msgstr "完成 Stripe 设置"
 
+#: src/components/routes/event/EventDashboard/index.tsx:279
+msgid "First 30 days from event start"
+msgstr "活动开始后的前30天"
+
+#: src/components/routes/event/EventDashboard/index.tsx:271
+msgid "First 7 days from event start"
+msgstr "活动开始后的前7天"
+
+#: src/components/routes/event/EventDashboard/index.tsx:287
+msgid "First 90 days from event start"
+msgstr "活动开始后的前90天"
+
 #: src/components/routes/product-widget/CollectInformation/index.tsx:500
 msgid "First attendee"
 msgstr "第一位参与者"
@@ -4040,6 +4053,10 @@ msgstr "免费产品，无需付款信息"
 msgid "French"
 msgstr "法语"
 
+#: src/components/routes/event/EventDashboard/index.tsx:295
+msgid "Full event duration"
+msgstr "活动全程"
+
 #: src/components/modals/RefundOrderModal/index.tsx:109
 msgid "Full refund"
 msgstr "全额退款"
@@ -4089,7 +4106,7 @@ msgstr "开始使用"
 msgid "Get Tickets"
 msgstr "获取门票"
 
-#: src/components/routes/event/EventDashboard/index.tsx:161
+#: src/components/routes/event/EventDashboard/index.tsx:166
 msgid "Get your event ready"
 msgstr "准备好您的活动"
 
@@ -4135,7 +4152,7 @@ msgid "Gross sales"
 msgstr "销售总额"
 
 #: src/components/routes/admin/Dashboard/index.tsx:259
-#: src/components/routes/event/EventDashboard/index.tsx:312
+#: src/components/routes/event/EventDashboard/index.tsx:367
 #: src/components/routes/organizer/OrganizerDashboard/index.tsx:119
 #: src/components/routes/organizer/Reports/RevenueSummaryReport/index.tsx:30
 msgid "Gross Sales"
@@ -4182,7 +4199,7 @@ msgstr "这是您的推广链接"
 msgid "Here's what to expect:"
 msgstr "预期结果："
 
-#: src/components/routes/event/EventDashboard/index.tsx:113
+#: src/components/routes/event/EventDashboard/index.tsx:118
 msgid "Hi {0} 👋"
 msgstr "你好 {0} 👋"
 
@@ -4432,7 +4449,7 @@ msgstr "重要通知"
 msgid "Important: Changing your email address will update the link to access this order. You will be redirected to the new order link after saving."
 msgstr "重要提示：更改您的电子邮件地址将更新访问此订单的链接。保存后，您将被重定向到新的订单链接。"
 
-#: src/components/routes/event/EventDashboard/index.tsx:129
+#: src/components/routes/event/EventDashboard/index.tsx:134
 msgid "Important: Stripe reconnection required"
 msgstr "重要：需要重新连接 Stripe"
 
@@ -4705,6 +4722,7 @@ msgstr "过去 24 小时"
 
 #: src/components/common/OrganizerReportTable/index.tsx:56
 #: src/components/common/ReportTable/index.tsx:48
+#: src/components/routes/event/EventDashboard/index.tsx:263
 msgid "Last 30 days"
 msgstr "过去 30 天"
 
@@ -4797,7 +4815,7 @@ msgstr "订单详情链接"
 msgid "Link to ticket"
 msgstr "门票链接"
 
-#: src/components/routes/event/EventDashboard/index.tsx:230
+#: src/components/routes/event/EventDashboard/index.tsx:235
 msgid "Link your Stripe account to receive funds from ticket sales."
 msgstr "链接您的 Stripe 账户以接收售票资金。"
 
@@ -4909,7 +4927,7 @@ msgstr "在结账时强制要求填写账单地址"
 msgid "Make this question mandatory"
 msgstr "将此问题作为必答题"
 
-#: src/components/routes/event/EventDashboard/index.tsx:184
+#: src/components/routes/event/EventDashboard/index.tsx:189
 msgid "Make your event live"
 msgstr "让您的活动上线"
 
@@ -5117,6 +5135,10 @@ msgstr "货币金额是所有货币的大致总和"
 #: src/components/routes/admin/FailedJobs/index.tsx:115
 msgid "Monitor and manage failed background jobs"
 msgstr "监控和管理失败的后台任务"
+
+#: src/components/routes/event/EventDashboard/index.tsx:280
+msgid "Month"
+msgstr "月"
 
 #: src/components/routes/admin/Dashboard/index.tsx:294
 msgid "Most Viewed Events (Last 14 Days)"
@@ -6683,7 +6705,7 @@ msgstr "产品删除成功"
 msgid "Product Price Type"
 msgstr "产品价格类型"
 
-#: src/components/routes/event/EventDashboard/index.tsx:253
+#: src/components/routes/event/EventDashboard/index.tsx:308
 #: src/components/routes/event/Reports/index.tsx:17
 msgid "Product Sales"
 msgstr "产品销售"
@@ -6720,7 +6742,7 @@ msgstr "已售产品"
 
 #: src/components/routes/admin/Dashboard/index.tsx:258
 #: src/components/routes/admin/Dashboard/index.tsx:355
-#: src/components/routes/event/EventDashboard/index.tsx:274
+#: src/components/routes/event/EventDashboard/index.tsx:329
 #: src/components/routes/organizer/OrganizerDashboard/index.tsx:125
 #: src/components/routes/organizer/Reports/EventsPerformanceReport/index.tsx:68
 msgid "Products Sold"
@@ -6791,7 +6813,7 @@ msgstr ""
 msgid "Publish"
 msgstr "发布"
 
-#: src/components/routes/event/EventDashboard/index.tsx:195
+#: src/components/routes/event/EventDashboard/index.tsx:200
 msgid "Publish Event"
 msgstr "发布活动"
 
@@ -6818,6 +6840,10 @@ msgstr "数量"
 #: src/components/forms/ProductForm/index.tsx:324
 msgid "Quantity Available"
 msgstr "可用数量"
+
+#: src/components/routes/event/EventDashboard/index.tsx:288
+msgid "Quarter"
+msgstr "季度"
 
 #: src/components/common/QuestionsTable/index.tsx:201
 msgid "Question deleted"
@@ -6882,6 +6908,10 @@ msgstr "实时分析"
 msgid "Receive product updates from {0}."
 msgstr "接收 {0} 的产品更新。"
 
+#: src/components/routes/event/EventDashboard/index.tsx:264
+msgid "Recent"
+msgstr "最近"
+
 #: src/components/routes/admin/Dashboard/index.tsx:389
 msgid "Recent Account Signups"
 msgstr "最近账户注册"
@@ -6913,7 +6943,7 @@ msgstr "收件人"
 msgid "Recipients are available after the message is sent"
 msgstr "收件人在消息发送后可用"
 
-#: src/components/routes/event/EventDashboard/index.tsx:135
+#: src/components/routes/event/EventDashboard/index.tsx:140
 msgid "Reconnect Stripe →"
 msgstr "重新连接 Stripe →"
 
@@ -7162,7 +7192,7 @@ msgstr "返回活动页面"
 #: src/components/common/AffiliateTable/index.tsx:157
 #: src/components/common/EventCard/index.tsx:235
 #: src/components/routes/admin/Attribution/index.tsx:137
-#: src/components/routes/event/EventDashboard/index.tsx:285
+#: src/components/routes/event/EventDashboard/index.tsx:340
 msgid "Revenue"
 msgstr "收入"
 
@@ -7904,7 +7934,7 @@ msgstr "出了点问题。请稍后再试。"
 msgid "Something went wrong. Please try again."
 msgstr "出错了。请重试。"
 
-#: src/components/routes/event/EventDashboard/index.tsx:131
+#: src/components/routes/event/EventDashboard/index.tsx:136
 msgid "Sorry for the inconvenience."
 msgstr "对于给您带来的不便，我们深表歉意。"
 
@@ -8973,7 +9003,7 @@ msgstr "总条目"
 msgid "Total Fee"
 msgstr "总费用"
 
-#: src/components/routes/event/EventDashboard/index.tsx:311
+#: src/components/routes/event/EventDashboard/index.tsx:366
 #: src/components/routes/organizer/OrganizerDashboard/index.tsx:149
 #: src/components/routes/organizer/Reports/EventsPerformanceReport/index.tsx:97
 msgid "Total Fees"
@@ -8995,11 +9025,11 @@ msgstr "总订单数"
 msgid "Total refunded"
 msgstr "退款总额"
 
-#: src/components/routes/event/EventDashboard/index.tsx:314
+#: src/components/routes/event/EventDashboard/index.tsx:369
 msgid "Total Refunded"
 msgstr "退款总额"
 
-#: src/components/routes/event/EventDashboard/index.tsx:313
+#: src/components/routes/event/EventDashboard/index.tsx:368
 #: src/components/routes/organizer/OrganizerDashboard/index.tsx:143
 #: src/components/routes/organizer/Reports/EventsPerformanceReport/index.tsx:91
 msgid "Total Tax"
@@ -9171,7 +9201,7 @@ msgstr "允许无限次使用"
 msgid "Unpaid Order"
 msgstr "未付款订单"
 
-#: src/components/routes/event/EventDashboard/index.tsx:206
+#: src/components/routes/event/EventDashboard/index.tsx:211
 msgid "Unpublish Event"
 msgstr "取消发布活动"
 
@@ -9691,7 +9721,7 @@ msgstr "我们正在处理您的订单。请稍候..."
 msgid "We've officially moved our headquarters to Ireland 🇮🇪. As part of this transition, we're now using Stripe Ireland instead of Stripe Canada. To keep your payouts running smoothly, you'll need to reconnect your Stripe account."
 msgstr "我们已正式将总部迁至爱尔兰 🇮🇪。作为此次过渡的一部分，我们现在使用 Stripe 爱尔兰而不是 Stripe 加拿大。为了保持您的付款顺利进行，您需要重新连接您的 Stripe 账户。"
 
-#: src/components/routes/event/EventDashboard/index.tsx:130
+#: src/components/routes/event/EventDashboard/index.tsx:135
 msgid "We've relocated our headquarters to Ireland. As a result, we need you to reconnect your Stripe account. This quick process takes just a few minutes. Your sales and existing data remain completely unaffected."
 msgstr "我们已将总部搬迁至爱尔兰。因此，我们需要您重新连接您的 Stripe 账户。这个快速过程只需几分钟。您的销售和现有数据完全不受影响。"
 
@@ -9743,6 +9773,10 @@ msgstr "Webhooks"
 msgid "Website"
 msgstr "网站"
 
+#: src/components/routes/event/EventDashboard/index.tsx:272
+msgid "Week"
+msgstr "周"
+
 #: src/components/routes/organizer/Settings/Sections/SocialLinks/index.tsx:105
 msgid "Weibo"
 msgstr "微博"
@@ -9755,7 +9789,7 @@ msgstr "欢迎加入！请登录以继续。"
 msgid "Welcome back"
 msgstr "欢迎回来"
 
-#: src/components/routes/event/EventDashboard/index.tsx:107
+#: src/components/routes/event/EventDashboard/index.tsx:112
 msgid "Welcome back{0} 👋"
 msgstr "欢迎回来{0} 👋"
 
@@ -10196,7 +10230,7 @@ msgstr "您要求将电子邮件更改为<0>{0}</0>的申请正在处理中。�
 msgid "Your event is live!"
 msgstr "您的活动已上线！"
 
-#: src/components/routes/event/EventDashboard/index.tsx:186
+#: src/components/routes/event/EventDashboard/index.tsx:191
 msgid "Your event must be live before you can sell tickets to attendees."
 msgstr "在向与会者销售门票之前，您的活动必须处于上线状态。"
 
