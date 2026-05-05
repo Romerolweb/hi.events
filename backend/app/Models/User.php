@@ -28,19 +28,19 @@ use RuntimeException;
  */
 class User extends BaseModel implements AuthenticatableContract, AuthorizableContract, CanResetPasswordContract, JWTSubject
 {
-    use SoftDeletes;
-    use Notifiable;
     use Authenticatable;
     use Authorizable;
     use CanResetPassword;
-    use MustVerifyEmail;
     use HasFactory;
     use Impersonate;
+    use MustVerifyEmail;
+    use Notifiable;
+    use SoftDeletes;
 
     /** @var array */
     protected $guarded = [];
 
-    protected static ?int $currentAccountId;
+    protected static ?int $currentAccountId = null;
 
     public static function setCurrentAccountId($accountId): void
     {
@@ -54,6 +54,11 @@ class User extends BaseModel implements AuthenticatableContract, AuthorizableCon
         }
 
         return self::$currentAccountId;
+    }
+
+    public static function resetCurrentAccountId(): void
+    {
+        self::$currentAccountId = null;
     }
 
     public function getJWTIdentifier()

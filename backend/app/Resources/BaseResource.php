@@ -19,4 +19,9 @@ abstract class BaseResource extends JsonResource
     {
         return static::$additionalData[$key] ?? null;
     }
+
+    public static function resetAdditionalData(): void
+    {
+        static::$additionalData = [];
+    }
 }
