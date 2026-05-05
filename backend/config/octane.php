@@ -1,5 +1,6 @@
 <?php
 
+use HiEvents\Listeners\Octane\ResetTenantStaticStateListener;
 use Laravel\Octane\Contracts\OperationTerminated;
 use Laravel\Octane\Events\RequestHandled;
 use Laravel\Octane\Events\RequestReceived;
@@ -73,7 +74,7 @@ return [
         RequestReceived::class => [
             ...Octane::prepareApplicationForNextOperation(),
             ...Octane::prepareApplicationForNextRequest(),
-            //
+            ResetTenantStaticStateListener::class,
         ],
 
         RequestHandled::class => [

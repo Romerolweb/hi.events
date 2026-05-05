@@ -61,6 +61,9 @@ primary_region = "iad"
     VITE_STRIPE_PUBLISHABLE_KEY = ""
     VITE_APP_NAME = "Hi.Events"
 
+[deploy]
+  release_command = "php artisan migrate --force"
+
 [env]
   APP_ENV = "production"
   APP_DEBUG = "false"
@@ -101,6 +104,13 @@ primary_region = "iad"
     type = "requests"
     soft_limit = 200
     hard_limit = 250
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "15s"
+    method = "GET"
+    path = "/api/health"
 
 [[vm]]
   memory = "512mb"

@@ -1,0 +1,122 @@
+# fly.toml.example — Hi.Events backend (API only, FrankenPHP + Laravel Octane)
+#
+# This config deploys the BACKEND only. Use it when the SPA frontend is hosted
+# elsewhere (Vercel, Cloudflare Pages, your own static host). The backend serves
+# /api routes; the frontend talks to it cross-origin via CORS_ALLOWED_ORIGINS.
+#
+# Quick start:
+#   1. cp backend/fly.toml.example backend/fly.toml
+#   2. Replace YOUR_API_NAME everywhere below
+#   3. Set secrets (see below). Never put secrets in this file.
+#   4. Deploy from /backend: fly deploy --remote-only
+#
+# ── Required secrets ──────────────────────────────────────────────
+#
+#   fly secrets set \
+#     APP_KEY="base64:$(openssl rand -base64 32)" \
+#     JWT_SECRET="$(openssl rand -base64 32)" \
+#     DATABASE_URL="postgresql://user:pass@host:6543/postgres" \
+#     CORS_ALLOWED_ORIGINS="https://app.yourdomain.com" \
+#     APP_URL="https://api.yourdomain.com" \
+#     APP_FRONTEND_URL="https://app.yourdomain.com" \
+#     --app YOUR_API_NAME
+#
+# ── File storage (S3-compatible: Supabase Storage, R2, AWS S3) ───
+#
+#   fly secrets set \
+#     AWS_ACCESS_KEY_ID="..." \
+#     AWS_SECRET_ACCESS_KEY="..." \
+#     AWS_ENDPOINT="https://<project-ref>.supabase.co/storage/v1/s3" \
+#     AWS_PUBLIC_BUCKET="hievents-public" \
+#     AWS_PRIVATE_BUCKET="hievents-private" \
+#     APP_CDN_URL="https://<project-ref>.supabase.co/storage/v1/object/public/hievents-public" \
+#     --app YOUR_API_NAME
+#
+# ── Stripe (when payments go live) ────────────────────────────────
+#
+#   fly secrets set \
+#     STRIPE_AU_SECRET_KEY="sk_live_..." \
+#     STRIPE_AU_PUBLIC_KEY="pk_live_..." \
+#     STRIPE_AU_WEBHOOK_SECRET="whsec_..." \
+#     STRIPE_PRIMARY_PLATFORM="au" \
+#     --app YOUR_API_NAME
+#
+# ── Database options ──────────────────────────────────────────────
+#
+# Recommended — Supabase (Sydney for AU primary):
+#   1. Create project at https://supabase.com (region: ap-southeast-2)
+#   2. Enable pg_trgm extension: Dashboard > Database > Extensions
+#   3. Use Transaction Pooler URL (port 6543) for DATABASE_URL:
+#      postgresql://postgres.<ref>:<pass>@aws-0-ap-southeast-2.pooler.supabase.com:6543/postgres
+#
+
+app = "YOUR_API_NAME"
+primary_region = "syd"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[deploy]
+  release_command = "php artisan migrate --force"
+
+[env]
+  APP_ENV = "production"
+  APP_DEBUG = "false"
+  LOG_CHANNEL = "stderr"
+  QUEUE_CONNECTION = "database"
+  CACHE_DRIVER = "file"
+  SESSION_DRIVER = "cookie"
+  DB_CONNECTION = "pgsql"
+  APP_DISABLE_REGISTRATION = "false"
+  APP_SAAS_MODE_ENABLED = "true"
+  MAIL_MAILER = "ses"
+  AWS_DEFAULT_REGION = "ap-southeast-2"
+  AWS_USE_PATH_STYLE_ENDPOINT = "true"
+  FILESYSTEM_PUBLIC_DISK = "s3-public"
+  FILESYSTEM_PRIVATE_DISK = "s3-private"
+  OCTANE_SERVER = "frankenphp"
+  OCTANE_HTTPS = "true"
+
+# ── Processes ─────────────────────────────────────────────────────
+# Three independent process groups. Scale them separately:
+#   fly scale count app=2 worker=1 scheduler=1
+# scheduler MUST stay at 1 to avoid duplicate cron firings.
+[processes]
+  app = "php artisan octane:start --server=frankenphp --host=0.0.0.0 --port=8000 --workers=auto --max-requests=500"
+  worker = "php artisan queue:work --tries=3 --max-time=3600 --sleep=3"
+  scheduler = "php artisan schedule:work"
+
+[http_service]
+  internal_port = 8000
+  force_https = true
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+  processes = ["app"]
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 200
+    hard_limit = 250
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "15s"
+    method = "GET"
+    path = "/api/health"
+
+[[vm]]
+  size = "shared-cpu-2x"
+  memory = "1024mb"
+  processes = ["app"]
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "512mb"
+  processes = ["worker"]
+
+[[vm]]
+  size = "shared-cpu-1x"
+  memory = "256mb"
+  processes = ["scheduler"]
