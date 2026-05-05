@@ -35,6 +35,6 @@ class LoginAction extends BaseAuthAction
             );
         }
 
-        return $this->respondWithToken($loginResponse->token, $loginResponse->accounts);
+        return $this->respondWithToken($loginResponse->token, $loginResponse->accounts, $loginResponse->user);
     }
 }

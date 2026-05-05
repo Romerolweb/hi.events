@@ -2,6 +2,7 @@
 
 namespace HiEvents\Http\Actions\Auth;
 
+use HiEvents\DomainObjects\UserDomainObject;
 use HiEvents\Http\Actions\BaseAction;
 use HiEvents\Resources\Auth\AuthenticatedResponseResource;
 use HiEvents\Services\Application\Handlers\Auth\DTO\AuthenticatedResponseDTO;
@@ -36,9 +37,9 @@ abstract class BaseAuthAction extends BaseAction
         return $response;
     }
 
-    protected function respondWithToken(?string $token, Collection $accounts): JsonResponse
+    protected function respondWithToken(?string $token, Collection $accounts, ?UserDomainObject $user = null): JsonResponse
     {
-        $user = $this->getAuthenticatedUser();
+        $user = $user ?? $this->getAuthenticatedUser();
 
         return $this->addTokenToResponse(
             response: $this->jsonResponse(new AuthenticatedResponseResource(new AuthenticatedResponseDTO(
