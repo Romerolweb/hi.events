@@ -5,7 +5,7 @@
 FROM composer:2 AS composer-bin
 
 # ---- Base PHP image with extensions + security patches ----
-FROM dunglas/frankenphp:1-php8.3-alpine AS base
+FROM dunglas/frankenphp:1.4-php8.3-alpine AS base
 
 ENV SERVER_NAME=":8000"
 ENV LARAVEL_OCTANE=1

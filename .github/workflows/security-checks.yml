@@ -1,0 +1,85 @@
+name: Security Checks
+
+on:
+  push:
+    branches: [main, develop, claude/multi-tenant-saas-conversion-ihGvg]
+    paths:
+      - 'backend/**'
+      - '.github/workflows/security-checks.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - '.github/workflows/security-checks.yml'
+
+jobs:
+  composer-audit:
+    name: Composer Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+
+      - name: composer audit (locked)
+        run: cd backend && composer audit --locked --no-interaction
+
+  pint:
+    name: Laravel Pint (changed files)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+          coverage: none
+
+      - name: Install dependencies
+        run: cd backend && composer install --prefer-dist --no-progress --no-interaction
+
+      - name: pint --test (changed PHP files only)
+        run: |
+          BASE=origin/${{ github.base_ref }}
+          CHANGED=$(git diff --name-only --diff-filter=AM "$BASE"...HEAD -- 'backend/**/*.php' | sed 's|^backend/||')
+          if [ -z "$CHANGED" ]; then
+            echo "No backend PHP files changed."
+            exit 0
+          fi
+          echo "Checking:"
+          echo "$CHANGED"
+          cd backend && echo "$CHANGED" | xargs ./vendor/bin/pint --test
+
+  trivy-image-scan:
+    name: Trivy Container Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build backend image
+        uses: docker/build-push-action@v5
+        with:
+          context: backend
+          file: backend/Dockerfile
+          push: false
+          load: true
+          tags: hievents-backend:ci
+
+      - name: Trivy scan (HIGH, CRITICAL only — fail build)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: hievents-backend:ci
+          severity: 'HIGH,CRITICAL'
+          ignore-unfixed: true
+          exit-code: '1'
+          format: 'table'
